@@ -1,6 +1,6 @@
 # track-idle-detector-for-geoevent
 
-ArcGIS GeoEvent Processor Sample Track Idle Detector.
+ArcGIS GeoEvent Processor Sample Location Idle Track Detector.
 
 ![App](TrackIdle.png?raw=true)
 
