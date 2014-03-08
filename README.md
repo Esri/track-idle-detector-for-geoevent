@@ -2,13 +2,13 @@
 
 ArcGIS GeoEvent Processor Sample Location Idle Track Detector.
 
-![App](TrackIdle.png?raw=true)
+![App](track-idle-detector-for-geoevent.png?raw=true)
 
 ## Features
-* Detects whether an event has moved and caches the last known location and timestamp for a new or moved event.
-* Allow user to define a distance tolerance and a idle time threshold.
-* Idle report can be generated in a continuous mode or in onChange mode.
-* Works with GeoEvent Processor 10.2.x
+* Detects whether an event had moved
+* Caches the last known location and time-stamp for a new or moved event.
+* Allows the user to define a distance tolerance and an idle time threshold.
+* Allows the user to define whether an idle report will be generated continuously or only on change.
 
 ## Instructions
 
@@ -23,15 +23,15 @@ Installing the built jar files:
 
 ## Requirements
 
-* ArcGIS GeoEvent Processor for Server.
+* ArcGIS GeoEvent Processor for Server (certified with version 10.2.x).
 * ArcGIS GeoEvent Processor SDK.
-* Java JDK 1.7 or greater.
+* Java JDK 1.6 or greater.
 * Maven.
 
 ## Resources
 
-* [Download the connector's tutorial](http://www.arcgis.com/home/item.html?id=041138094e5348eb902f4b71175eeb6f) from the ArcGIS GeoEvent Processor Gallery
-* [ArcGIS GeoEvent Processor for Server Resource Center](http://pro.arcgis.com/share/geoevent-processor/)
+* [Processor gallery item](http://www.arcgis.com/home/item.html?id=5d8e3446736d4df299c7c96bc275d561) on the ArcGIS GeoEvent Processor Gallery
+* [ArcGIS GeoEvent Processor for Server Resource Center](http://links.esri.com/geoevent-processor/)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
 
