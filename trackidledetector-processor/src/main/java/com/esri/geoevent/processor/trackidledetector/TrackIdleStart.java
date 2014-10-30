@@ -20,80 +20,79 @@
   Redlands, California, USA 92373
 
   email: contracts@esri.com
-*/
+ */
 
 package com.esri.geoevent.processor.trackidledetector;
 
 import java.util.Date;
 
-import com.esri.ges.spatial.Geometry;
+import com.esri.core.geometry.MapGeometry;
 
 public class TrackIdleStart
 {
-  private String trackId;
-  private Date startTime;
-  private Geometry geometry;
-  private boolean isIdling;
-  private double idleDuration;
-  
-  public TrackIdleStart(String trackId, Date startTime, Geometry geometry)
-  {
-    this.trackId = trackId;
-    this.startTime = startTime;
-    this.geometry = geometry;
-    this.setIdling(false);
-    this.idleDuration = 0;
-  }
+	private String			trackId;
+	private Date				startTime;
+	private MapGeometry	geometry;
+	private boolean			isIdling;
+	private double			idleDuration;
 
-  public String getTrackId()
-  {
-    return trackId;
-  }
+	public TrackIdleStart(String trackId, Date startTime, MapGeometry geometry)
+	{
+		this.trackId = trackId;
+		this.startTime = startTime;
+		this.geometry = geometry;
+		this.setIdling(false);
+		this.idleDuration = 0;
+	}
 
-  public void setTrackId(String trackId)
-  {
-    this.trackId = trackId;
-  }
+	public String getTrackId()
+	{
+		return trackId;
+	}
 
-  public Date getStartTime()
-  {
-    return startTime;
-  }
+	public void setTrackId(String trackId)
+	{
+		this.trackId = trackId;
+	}
 
-  public void setStartTime(Date startTime)
-  {
-    this.startTime = startTime;
-  }
+	public Date getStartTime()
+	{
+		return startTime;
+	}
 
-  public Geometry getGeometry()
-  {
-    return geometry;
-  }
+	public void setStartTime(Date startTime)
+	{
+		this.startTime = startTime;
+	}
 
-  public void setGeometry(Geometry geometry)
-  {
-    this.geometry = geometry;
-  }
+	public MapGeometry getGeometry()
+	{
+		return geometry;
+	}
 
-  public boolean isIdling()
-  {
-    return isIdling;
-  }
+	public void setGeometry(MapGeometry geometry)
+	{
+		this.geometry = geometry;
+	}
 
-  public void setIdling(boolean isIdling)
-  {
-    this.isIdling = isIdling;
-  }
+	public boolean isIdling()
+	{
+		return isIdling;
+	}
 
-  public double getIdleDuration()
-  {
-    return idleDuration;
-  }
+	public void setIdling(boolean isIdling)
+	{
+		this.isIdling = isIdling;
+	}
 
-  public void setIdleDuration(double idleDuration)
-  {
-    this.idleDuration = idleDuration;
-  }
-  
-  
+	public double getIdleDuration()
+	{
+		return idleDuration;
+	}
+
+	public void setIdleDuration(double idleDuration)
+	{
+		this.idleDuration = idleDuration;
+	}
+
 }

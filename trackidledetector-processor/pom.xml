@@ -3,11 +3,12 @@
 	<parent>
 		<groupId>com.esri.geoevent.parent</groupId>
 		<artifactId>track-idle-detector</artifactId>
-		<version>10.2.0</version>
+		<version>10.3.0</version>
 	</parent>
 	<packaging>bundle</packaging>
+	<groupId>com.esri.geoevent.processor</groupId>
 	<artifactId>trackidledetector-processor</artifactId>
-	<name>Esri :: GEOEVENT :: Processor :: Track Idle Detector</name>
+	<name>Esri :: GeoEvent :: Processor :: Track Idle Detector</name>
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -16,67 +17,9 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.esri.geometry</groupId>
-			<artifactId>esri-geometry-api</artifactId>
-			<version>1.1.1</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
-		    <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-esri-geometry-library</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.esri.geometry</groupId>
-									<artifactId>esri-geometry-api</artifactId>
-									<version>1.1.1</version>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.json</groupId>
-                  <artifactId>json</artifactId>
-									<version>20131018</version>
-								</artifactItem>
-							</artifactItems>
-							<excludeTransitive>false</excludeTransitive>
-							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-						</configuration>
-					</execution>
-
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>delete-httpclient-metainf</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<delete dir="${project.build.outputDirectory}/META-INF" />
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
@@ -86,10 +29,8 @@
 						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-ContactAddress>geoevent@esri.com</Bundle-ContactAddress>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<AGES-Domain>com.esri.geoevent.processor</AGES-Domain>
 						<Export-Package/>
-						<Private-Package>com.esri.geoevent.processor.trackidledetector,com.esri.core.geometry.*;version=1.1.1;-split-package:=first,
-						    org.json.*;version=20131018;-split-package:=first</Private-Package>
+						<Private-Package>com.esri.geoevent.processor.trackidledetector</Private-Package>
 					</instructions>
 				</configuration>
 			</plugin>
