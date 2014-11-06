@@ -9,15 +9,7 @@
 	<groupId>com.esri.geoevent.processor</groupId>
 	<artifactId>trackidledetector-processor</artifactId>
 	<name>Esri :: GeoEvent :: Processor :: Track Idle Detector</name>
-	<dependencies>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>[1.2.9,)</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -32,6 +24,14 @@
 						<Export-Package/>
 						<Private-Package>com.esri.geoevent.processor.trackidledetector</Private-Package>
 					</instructions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
