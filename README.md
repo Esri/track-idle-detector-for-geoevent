@@ -1,6 +1,6 @@
 # track-idle-detector-for-geoevent
 
-ArcGIS GeoEvent Processor Sample Location Idle Track Detector.
+ArcGIS 10.2.x GeoEvent Extension Sample Location Idle Track Detector.
 
 ![App](track-idle-detector-for-geoevent.png?raw=true)
 
@@ -14,24 +14,24 @@ ArcGIS GeoEvent Processor Sample Location Idle Track Detector.
 
 Building the source code:
 
-1. Make sure Maven and ArcGIS GeoEvent Processor SDK are installed on your machine.
+1. Make sure Maven and ArcGIS GeoEvent Extension SDK are installed on your machine.
 2. Run 'mvn install -Dcontact.address=[YourContactEmailAddress]'
 
 Installing the built jar files:
 
-1. Copy the *.jar files under the 'target' sub-folder(s) into the [ArcGIS-GeoEvent-Processor-Install-Directory]/deploy folder.
+1. Copy the *.jar files under the 'target' sub-folder(s) into the [ArcGIS-GeoEvent-Extension-Install-Directory]/deploy folder.
 
 ## Requirements
 
-* ArcGIS GeoEvent Processor for Server (certified with version 10.2.x).
-* ArcGIS GeoEvent Processor SDK.
+* ArcGIS GeoEvent Extension for Server (certified with version 10.2.x).
+* ArcGIS GeoEvent Extension SDK.
 * Java JDK 1.6 or greater.
 * Maven.
 
 ## Resources
 
-* [Processor gallery item](http://www.arcgis.com/home/item.html?id=5d8e3446736d4df299c7c96bc275d561) on the ArcGIS GeoEvent Processor Gallery
-* [ArcGIS GeoEvent Processor for Server Resource Center](http://links.esri.com/geoevent-processor/)
+* [GeoEvent gallery item](http://www.arcgis.com/home/item.html?id=5d8e3446736d4df299c7c96bc275d561) on the ArcGIS GeoEvent Extension Gallery
+* [ArcGIS GeoEvent Extension for Server Resource Center](http://links.esri.com/geoevent)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
 
@@ -61,5 +61,5 @@ limitations under the License.
 A copy of the license is available in the repository's [license.txt](license.txt?raw=true) file.
 
 [](ArcGIS, GeoEvent, Processor)
-[](Esri Tags: ArcGIS GeoEvent Processor for Server)
+[](Esri Tags: ArcGIS GeoEvent Extension for Server)
 [](Esri Language: Java)
