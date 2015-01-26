@@ -1,6 +1,6 @@
 # track-idle-detector-for-geoevent
 
-ArcGIS 10.3.x GeoEvent Extension Sample Location Idle Track Detector.
+ArcGIS 10.3 GeoEvent Extension for Server sample Location Idle Track Detector Processor.
 
 ![App](track-idle-detector-for-geoevent.png?raw=true)
 
@@ -23,7 +23,7 @@ Installing the built jar files:
 
 ## Requirements
 
-* ArcGIS GeoEvent Extension for Server (certified with version 10.3.x).
+* ArcGIS GeoEvent Extension for Server (certified with version 10.3).
 * ArcGIS GeoEvent Extension SDK.
 * Java JDK 1.7 or greater.
 * Maven.
@@ -31,7 +31,7 @@ Installing the built jar files:
 ## Resources
 
 * [GeoEvent gallery item](http://www.arcgis.com/home/item.html?id=5d8e3446736d4df299c7c96bc275d561) on the ArcGIS GeoEvent Extension Gallery
-* [ArcGIS GeoEvent Extension for Server Resource Center](http://links.esri.com/geoevent)
+* [ArcGIS GeoEvent Extension for Server Resources](http://links.esri.com/geoevent)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
 
