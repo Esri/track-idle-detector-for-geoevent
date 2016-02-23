@@ -1,6 +1,6 @@
 # track-idle-detector-for-geoevent
 
-ArcGIS 10.3 GeoEvent Extension for Server sample Location Idle Track Detector Processor.
+ArcGIS 10.4 GeoEvent Extension for Server sample Location Idle Track Detector Processor.
 
 ![App](track-idle-detector-for-geoevent.png?raw=true)
 
