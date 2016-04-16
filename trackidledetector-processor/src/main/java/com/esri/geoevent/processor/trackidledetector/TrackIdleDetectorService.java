@@ -54,7 +54,7 @@ public class TrackIdleDetectorService extends GeoEventProcessorServiceBase
 		this.messaging = messaging;
 	}
 
-	public void setManager(GeoEventDefinitionManager gedManager)
+	public void setGedManager(GeoEventDefinitionManager gedManager)
 	{
 		this.gedManager = gedManager;
 	}

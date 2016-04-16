@@ -89,7 +89,6 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 
 	public void afterPropertiesSet()
 	{
-
 		// read properties
 		notificationMode = Validator.valueOfIgnoreCase(TrackIdleNotificationMode.class, getProperty("notificationMode").getValueAsString(), TrackIdleNotificationMode.OnChange);
 		idleLimit = Converter.convertToInteger(getProperty("idleLimit").getValueAsString(), 300);
@@ -99,7 +98,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 		accumulateIdleDuration = (Boolean) getProperty("accumulateIdleDuration").getValue();
 		idleDurationWhileNotIdle = (Boolean) getProperty("idleDurationWhileNotIdle").getValue();
 
-
+		// prepare to augment idle fields to the ged
 		fds = new ArrayList<FieldDefinition>();
 		try
 		{
@@ -254,36 +253,34 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 		}
 		else
 		{
-			/*
-			ged = new DefaultGeoEventDefinition();
-			ged.setName("TrackIdle");
-			List<FieldDefinition> fds = new ArrayList<FieldDefinition>();
-			fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
-			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
-			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
-			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
-			fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
-			ged.setFieldDefinitions(fds);
-			geoEventDefinitions.put(ged.getName(), ged);
-			*/
+			// create a "TrackIdle" GED with only the track idle fields
+
+			// add TrackId and Geometry field definitions to the idle field definitions
+
+			//fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
+			//fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
+
+
+			FieldDefinition trackIdFD = event.getGeoEventDefinition().getFieldDefinition("TRACK_ID");
+			FieldDefinition geometryFD = event.getGeoEventDefinition().getFieldDefinition("GEOMETRY");
+			fds.add(trackIdFD);
+			fds.add(geometryFD);
 
 			ged = new DefaultGeoEventDefinition();
-			FieldDefinition trackidFD = event.getGeoEventDefinition().getFieldDefinition("TRACK_ID");
-			fds.add(trackidFD);
-			FieldDefinition geoFD = event.getGeoEventDefinition().getFieldDefinition("GEOMETRY");
-			fds.add(geoFD);
 			ged.setFieldDefinitions(fds);
 		}
+
+		//ged.setName("TrackIdle");
 		ged.setName(outGedName);
 		ged.setOwner(definition.getUri().toString());
 		try
 		{
+			//geoEventDefinitions.put(ged.getName(), ged);
 			gedManager.addGeoEventDefinition(ged);
 		}
 		catch (GeoEventDefinitionManagerException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error(e.getLocalizedMessage());
 		}
 	}
 

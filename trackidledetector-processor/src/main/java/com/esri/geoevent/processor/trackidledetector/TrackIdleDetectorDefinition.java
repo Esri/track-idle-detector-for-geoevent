@@ -58,12 +58,28 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 			propertyDefinitions.put("outGedName", new PropertyDefinition("outGedName", PropertyType.String, "", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_OUT_GED_NAME_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_OUT_GD_NAME_DESC}", true, false));
 			propertyDefinitions.put("accumulateIdleDuration", new PropertyDefinition("accumulateIdleDuration", PropertyType.Boolean, true, "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_ACCUMULATE_IDLE_DURATION_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_ACCUMULATE_IDLE_DURATION_DESC}", true, false));
 			propertyDefinitions.put("idleDurationWhileNotIdle", new PropertyDefinition("keepFields", PropertyType.Boolean, true, "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_IDLE_DURATION_WHILE_NOT_IDLE_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_IDLE_DURATION_WHILE_NOT_IDLE_DESC}", true, false));
+
+			/*
+			GeoEventDefinition ged = new DefaultGeoEventDefinition();
+			ged.setName("TrackIdle");
+			List<FieldDefinition> fds = new ArrayList<FieldDefinition>();
+			fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
+			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
+			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
+			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
+			fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
+			ged.setFieldDefinitions(fds);
+			geoEventDefinitions.put(ged.getName(), ged);
+			*/
 		}
 		catch (Exception error)
 		{
 			LOGGER.error("INIT_ERROR", error.getMessage());
 			LOGGER.info(error.getMessage(), error);
 		}
+
+
+	
 	}
 
 	@Override
