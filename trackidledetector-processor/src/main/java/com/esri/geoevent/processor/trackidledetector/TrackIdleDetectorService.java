@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2014 Esri
+  Copyright 1995-2016 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,34 +20,42 @@
   Redlands, California, USA 92373
 
   email: contracts@esri.com
-*/
+ */
 
 package com.esri.geoevent.processor.trackidledetector;
 
 import com.esri.ges.core.component.ComponentException;
+import com.esri.ges.manager.geoeventdefinition.GeoEventDefinitionManager;
 import com.esri.ges.messaging.Messaging;
 import com.esri.ges.processor.GeoEventProcessor;
 import com.esri.ges.processor.GeoEventProcessorServiceBase;
 
 public class TrackIdleDetectorService extends GeoEventProcessorServiceBase
 {
-  private Messaging messaging;
+	private Messaging									messaging;
+	private GeoEventDefinitionManager	gedManager;
 
-  public TrackIdleDetectorService()
-  {
-    definition = new TrackIdleDetectorDefinition();
-  }
+	public TrackIdleDetectorService()
+	{
+		definition = new TrackIdleDetectorDefinition();
+	}
 
-  @Override
-  public GeoEventProcessor create() throws ComponentException
-  {
-    TrackIdleDetector detector = new TrackIdleDetector(definition);
-    detector.setMessaging(messaging);
-    return detector;
-  }
+	@Override
+	public GeoEventProcessor create() throws ComponentException
+	{
+		TrackIdleDetector detector = new TrackIdleDetector(definition);
+		detector.setMessaging(messaging);
+		detector.setManager(gedManager);
+		return detector;
+	}
 
-  public void setMessaging(Messaging messaging)
-  {
-    this.messaging = messaging;
-  }
+	public void setMessaging(Messaging messaging)
+	{
+		this.messaging = messaging;
+	}
+
+	public void setManager(GeoEventDefinitionManager gedManager)
+	{
+		this.gedManager = gedManager;
+	}
 }

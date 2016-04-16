@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2014 Esri
+  Copyright 1995-2016 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 package com.esri.geoevent.processor.trackidledetector;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,14 +34,21 @@ import com.esri.core.geometry.Geometry.Type;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.MapGeometry;
 import com.esri.core.geometry.Point;
+import com.esri.ges.core.ConfigurationException;
 import com.esri.ges.core.component.ComponentException;
+import com.esri.ges.core.geoevent.DefaultFieldDefinition;
+import com.esri.ges.core.geoevent.DefaultGeoEventDefinition;
+import com.esri.ges.core.geoevent.FieldDefinition;
 import com.esri.ges.core.geoevent.FieldException;
+import com.esri.ges.core.geoevent.FieldType;
 import com.esri.ges.core.geoevent.GeoEvent;
 import com.esri.ges.core.geoevent.GeoEventDefinition;
 import com.esri.ges.core.geoevent.GeoEventPropertyName;
 import com.esri.ges.core.validation.ValidationException;
 import com.esri.ges.framework.i18n.BundleLogger;
 import com.esri.ges.framework.i18n.BundleLoggerFactory;
+import com.esri.ges.manager.geoeventdefinition.GeoEventDefinitionManager;
+import com.esri.ges.manager.geoeventdefinition.GeoEventDefinitionManagerException;
 import com.esri.ges.messaging.GeoEventCreator;
 import com.esri.ges.messaging.Messaging;
 import com.esri.ges.messaging.MessagingException;
@@ -53,12 +61,26 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 {
 	private static final BundleLogger					LOGGER			= BundleLoggerFactory.getLogger(TrackIdleDetector.class);
 
-	private TrackIdleNotificationMode					notificationMode;
+	// transport properties
 	private long															idleLimit;
-	private GeoEventCreator										geoEventCreator;
 	private long															tolerance;
+	private String														outGedName;
+	private Boolean														keepFields								= false;
+	private boolean														accumulateIdleDuration		= true;
+	private boolean														idleDurationWhileNotIdle	= true;
+	private TrackIdleNotificationMode					notificationMode;
 
-	private final Map<String, TrackIdleStart>	trackIdles	= new ConcurrentHashMap<String, TrackIdleStart>();
+	// injections
+	private GeoEventCreator										geoEventCreator;
+	private GeoEventDefinitionManager					gedManager;
+
+	// private data members
+	private Boolean														createGed		= false;
+	private List<FieldDefinition>							fds;
+	private GeoEventDefinition								ged;
+
+	private final Map<String, TrackIdleItem>	trackIdles	= new ConcurrentHashMap<String, TrackIdleItem>();
+
 
 	protected TrackIdleDetector(GeoEventProcessorDefinition definition) throws ComponentException
 	{
@@ -67,9 +89,37 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 
 	public void afterPropertiesSet()
 	{
+
+		// read properties
 		notificationMode = Validator.valueOfIgnoreCase(TrackIdleNotificationMode.class, getProperty("notificationMode").getValueAsString(), TrackIdleNotificationMode.OnChange);
 		idleLimit = Converter.convertToInteger(getProperty("idleLimit").getValueAsString(), 300);
 		tolerance = Converter.convertToLong(getProperty("tolerance").getValueAsString(), 50l);
+		keepFields = (Boolean) getProperty("keepFields").getValue();
+		outGedName = getProperty("outGedName").getValueAsString();
+		accumulateIdleDuration = (Boolean) getProperty("accumulateIdleDuration").getValue();
+		idleDurationWhileNotIdle = (Boolean) getProperty("idleDurationWhileNotIdle").getValue();
+
+
+		fds = new ArrayList<FieldDefinition>();
+		try
+		{
+			// fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
+			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
+			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
+			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
+			// fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
+
+			if ((ged = gedManager.searchGeoEventDefinition(outGedName, definition.getUri().toString())) == null)
+			{
+				createGed = true;
+			}
+		}
+		catch (ConfigurationException e)
+		{
+
+		}
+
+		// geoEventDefinitions.put(ged.getName(), ged);
 	}
 
 	@Override
@@ -95,9 +145,15 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 		}
 	}
 
-	private GeoEvent processGeoEvent(GeoEvent geoEvent)
+	private GeoEvent processGeoEvent(GeoEvent geoEvent) throws GeoEventDefinitionManagerException
 	{
 		GeoEvent geoevent = null;
+
+		if (createGed)
+		{
+			createGeoEventDefinition(geoEvent, keepFields);
+			createGed = false;
+		}
 
 		if (geoEvent.getTrackId() == null || geoEvent.getGeometry() == null)
 		{
@@ -111,39 +167,68 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 		}
 		try
 		{
-			String cacheKey = buildCacheKey(geoEvent);
-			TrackIdleStart idleStart = trackIdles.get(cacheKey);
-			if (idleStart != null && idleStart.getGeometry() != null)
+			String cacheKey          = buildCacheKey(geoEvent);
+			TrackIdleItem idleItem   = trackIdles.get(cacheKey);
+			Date geoEventTime        = geoEvent.getStartTime();
+
+			if (idleItem != null && idleItem.getGeometry() != null)
 			{
-				if (!hasGeometryMoved(geoEvent.getGeometry(), idleStart.getGeometry(), tolerance))
+				if (!hasGeometryMoved(geoEvent.getGeometry(), idleItem.getGeometry(), tolerance))
 				{
-					double idleDuration = (geoEvent.getStartTime().getTime() - idleStart.getStartTime().getTime()) / 1000.0;
-					idleDuration = idleDuration >= 0 ? idleDuration : -idleDuration;
+					// didn't move more than tolerance (in feet)
+
+					double idleDuration = 0;
+					if (accumulateIdleDuration)
+					{
+						idleDuration = geoEventTime.getTime() - idleItem.getStartTime().getTime();
+					}
+					else
+					{
+						idleDuration = geoEventTime.getTime() - idleItem.getPreviousTime().getTime();
+					}
+					idleDuration = idleDuration / 1000.0;
+					idleDuration = Math.abs(idleDuration);
 					idleDuration = Math.round(idleDuration * 10.0) / 10.0;
+
 					if (idleDuration >= idleLimit)
 					{
-						idleStart.setIdleDuration(idleDuration);
+						// track is idle more than idleLimit
+
+						// set track idle duration
+						idleItem.setIdleDuration(idleDuration);
+
 						if (notificationMode == TrackIdleNotificationMode.Continuous)
-							geoevent = createTrackIdleGeoEvent(idleStart, true);
-						else if (!idleStart.isIdling())
-							geoevent = createTrackIdleGeoEvent(idleStart, true);
-						idleStart.setIdling(true);
+							geoevent = createTrackIdleGeoEvent(idleItem, true, geoEvent, ged);
+						else if (!idleItem.isIdling())
+							geoevent = createTrackIdleGeoEvent(idleItem, true, geoEvent, ged);
+
+						// set track to idle
+						idleItem.setIdling(true);
 					}
 				}
 				else
 				{
-					if (idleStart.isIdling())
+					// moved more than tolerance, track is not idle
+					if (idleItem.isIdling())
 					{
-						geoevent = createTrackIdleGeoEvent(idleStart, false);
+						// track is no longer idle
+
+						if (!idleDurationWhileNotIdle)
+							idleItem.setIdleDuration(0);
+
+						geoevent = createTrackIdleGeoEvent(idleItem, false, geoEvent, ged);
 					}
-					idleStart.setGeometry(geoEvent.getGeometry());
-					idleStart.setStartTime(geoEvent.getStartTime());
-					idleStart.setIdling(false);
+
+					idleItem.setGeometry(geoEvent.getGeometry());
+					idleItem.setStartTime(geoEventTime);
+
+					// set track to not idle
+					idleItem.setIdling(false);
 				}
 			}
 			else
 			{
-				trackIdles.put(cacheKey, new TrackIdleStart(geoEvent.getTrackId(), geoEvent.getStartTime(), geoEvent.getGeometry()));
+				trackIdles.put(cacheKey, new TrackIdleItem(geoEvent.getTrackId(), geoEventTime, geoEventTime, geoEvent.getGeometry()));
 			}
 		}
 		catch (Exception error)
@@ -151,6 +236,55 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 			LOGGER.error(error.getMessage(), error);
 		}
 		return geoevent;
+	}
+
+	private void createGeoEventDefinition(GeoEvent event, Boolean retainFlds)
+	{
+		if (keepFields)
+		{
+			GeoEventDefinition eventDef = event.getGeoEventDefinition();
+			try
+			{
+				ged = eventDef.augment(fds);
+			}
+			catch (ConfigurationException e)
+			{
+				LOGGER.error(e.getLocalizedMessage());
+			}
+		}
+		else
+		{
+			/*
+			ged = new DefaultGeoEventDefinition();
+			ged.setName("TrackIdle");
+			List<FieldDefinition> fds = new ArrayList<FieldDefinition>();
+			fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
+			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
+			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
+			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
+			fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
+			ged.setFieldDefinitions(fds);
+			geoEventDefinitions.put(ged.getName(), ged);
+			*/
+
+			ged = new DefaultGeoEventDefinition();
+			FieldDefinition trackidFD = event.getGeoEventDefinition().getFieldDefinition("TRACK_ID");
+			fds.add(trackidFD);
+			FieldDefinition geoFD = event.getGeoEventDefinition().getFieldDefinition("GEOMETRY");
+			fds.add(geoFD);
+			ged.setFieldDefinitions(fds);
+		}
+		ged.setName(outGedName);
+		ged.setOwner(definition.getUri().toString());
+		try
+		{
+			gedManager.addGeoEventDefinition(ged);
+		}
+		catch (GeoEventDefinitionManagerException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private boolean hasGeometryMoved(MapGeometry geom1, MapGeometry geom2, double tolerance)
@@ -186,31 +320,54 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 		return meter * 3.28084;
 	}
 
-	private GeoEvent createTrackIdleGeoEvent(TrackIdleStart idleStart, boolean isIdle) throws MessagingException
+	private GeoEvent createTrackIdleGeoEvent(TrackIdleItem idleItem, boolean isIdle, GeoEvent geoEvent, GeoEventDefinition ged) throws MessagingException
 	{
-		GeoEvent idleEvent = null;
+		GeoEvent idleGeoEvent = null;
 		if (geoEventCreator != null)
 		{
 			try
 			{
-				idleEvent = geoEventCreator.create("TrackIdle", definition.getUri().toString());
-				idleEvent.setField(0, idleStart.getTrackId());
-				idleEvent.setField(1, isIdle);
-				idleEvent.setField(2, idleStart.getIdleDuration());
-				idleEvent.setField(3, idleStart.getStartTime());
-				idleEvent.setField(4, idleStart.getGeometry());
-				idleEvent.setProperty(GeoEventPropertyName.TYPE, "event");
-				idleEvent.setProperty(GeoEventPropertyName.OWNER_ID, getId());
-				idleEvent.setProperty(GeoEventPropertyName.OWNER_URI, definition.getUri());
+				idleGeoEvent = geoEventCreator.create(outGedName, definition.getUri().toString());
+				// idleEvent.setField(0, idleItem.getTrackId());
+				// idleEvent.setField("trackId", idleItem.getTrackId());
+				idleGeoEvent.setField("idle", isIdle);
+				idleGeoEvent.setField("idleDuration", idleItem.getIdleDuration());
+				idleGeoEvent.setField("idleStart", idleItem.getStartTime());
+				// idleEvent.setField("GEOMETRY", idleItem.getGeometry());
+
+				if (keepFields)
+				{
+					for (FieldDefinition fd : geoEvent.getGeoEventDefinition().getFieldDefinitions())
+					{
+						idleGeoEvent.setField(fd.getName(), geoEvent.getField(fd.getName()));
+					}
+				}
+				else
+				{
+					for (FieldDefinition fd : geoEvent.getGeoEventDefinition().getFieldDefinitions())
+					{
+						if (fd.getTags().contains("TRACK_ID") || fd.getTags().contains("GEOMETRY"))
+						{
+							idleGeoEvent.setField(fd.getName(), geoEvent.getField(fd.getName()));
+						}
+					}
+				}
+
+				idleGeoEvent.setProperty(GeoEventPropertyName.TYPE, "event");
+				idleGeoEvent.setProperty(GeoEventPropertyName.OWNER_ID, getId());
+				idleGeoEvent.setProperty(GeoEventPropertyName.OWNER_URI, definition.getUri());
+
+				// set previous time to the current GeoEvent time
+				idleItem.setPreviousTime(geoEvent.getStartTime());
 			}
 			catch (FieldException error)
 			{
-				idleEvent = null;
+				idleGeoEvent = null;
 				LOGGER.error("GEOEVENT_CREATION_ERROR", error.getMessage());
 				LOGGER.info(error.getMessage(), error);
 			}
 		}
-		return idleEvent;
+		return idleGeoEvent;
 	}
 
 	private String buildCacheKey(GeoEvent geoEvent)
@@ -226,5 +383,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 	public void setMessaging(Messaging messaging)
 	{
 		geoEventCreator = messaging.createGeoEventCreator();
+	}
+
+	public void setManager(GeoEventDefinitionManager gedManager)
+	{
+		this.gedManager = gedManager;
 	}
 }

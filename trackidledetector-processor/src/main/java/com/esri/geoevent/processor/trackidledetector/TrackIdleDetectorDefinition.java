@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2014 Esri
+  Copyright 1995-2016 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,17 +54,10 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 			propertyDefinitions.put("notificationMode", new PropertyDefinition("notificationMode", PropertyType.String, "OnChange", "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_NOTIFICATION_MODE_LBL}", "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_NOTIFICATION_MODE_DESC}", true, false, allowableValues));
 			propertyDefinitions.put("idleLimit", new PropertyDefinition("idleLimit", PropertyType.Long, 300, "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_IDLE_LIMIT_LBL}", "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_IDLE_LIMIT_DESC}", true, false));
 			propertyDefinitions.put("tolerance", new PropertyDefinition("tolerance", PropertyType.Long, 120, "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_TOLERANCE_LBL}", "${com.esri.geoevent.processor.trackidledetector-processor.PROCESSOR_TOLERANCE_DESC}", true, false));
-
-			GeoEventDefinition ged = new DefaultGeoEventDefinition();
-			ged.setName("TrackIdle");
-			List<FieldDefinition> fds = new ArrayList<FieldDefinition>();
-			fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
-			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
-			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
-			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
-			fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry));
-			ged.setFieldDefinitions(fds);
-			geoEventDefinitions.put(ged.getName(), ged);
+			propertyDefinitions.put("keepFields", new PropertyDefinition("keepFields", PropertyType.Boolean, false, "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_KEEP_FIELDS_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_KEEP_FIELDS_DESC}", true, false));
+			propertyDefinitions.put("outGedName", new PropertyDefinition("outGedName", PropertyType.String, "", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_OUT_GED_NAME_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_OUT_GD_NAME_DESC}", true, false));
+			propertyDefinitions.put("accumulateIdleDuration", new PropertyDefinition("accumulateIdleDuration", PropertyType.Boolean, true, "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_ACCUMULATE_IDLE_DURATION_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_ACCUMULATE_IDLE_DURATION_DESC}", true, false));
+			propertyDefinitions.put("idleDurationWhileNotIdle", new PropertyDefinition("keepFields", PropertyType.Boolean, true, "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_IDLE_DURATION_WHILE_NOT_IDLE_LBL}", "${com.esri.geoevent.processor.trackidle.trackidle-processor.PROCESSOR_IDLE_DURATION_WHILE_NOT_IDLE_DESC}", true, false));
 		}
 		catch (Exception error)
 		{

@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2014 Esri
+  Copyright 1995-2016 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -28,21 +28,22 @@ import java.util.Date;
 
 import com.esri.core.geometry.MapGeometry;
 
-public class TrackIdleStart
+public class TrackIdleItem
 {
 	private String			trackId;
 	private Date				startTime;
+	private Date				previousTime;
 	private MapGeometry	geometry;
 	private boolean			isIdling;
 	private double			idleDuration;
 
-	public TrackIdleStart(String trackId, Date startTime, MapGeometry geometry)
+	public TrackIdleItem(String trackId, Date startTime, Date previousTime, MapGeometry geometry)
 	{
-		this.trackId = trackId;
-		this.startTime = startTime;
-		this.geometry = geometry;
-		this.setIdling(false);
+		this.trackId      = trackId;
+		this.startTime    = startTime;
+		this.geometry     = geometry;
 		this.idleDuration = 0;
+		this.setIdling(false);
 	}
 
 	public String getTrackId()
@@ -63,6 +64,16 @@ public class TrackIdleStart
 	public void setStartTime(Date startTime)
 	{
 		this.startTime = startTime;
+	}
+
+	public Date getPreviousTime()
+	{
+		return previousTime;
+	}
+
+	public void setPreviousTime(Date previousTime)
+	{
+		this.previousTime = previousTime;
 	}
 
 	public MapGeometry getGeometry()

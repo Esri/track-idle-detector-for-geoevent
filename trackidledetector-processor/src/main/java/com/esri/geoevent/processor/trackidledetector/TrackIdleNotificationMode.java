@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2014 Esri
+  Copyright 1995-2016 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@
   Redlands, California, USA 92373
 
   email: contracts@esri.com
-*/
+ */
 
 package com.esri.geoevent.processor.trackidledetector;
 
 public enum TrackIdleNotificationMode
 {
-  OnChange, Continuous
+	OnChange, Continuous
 }
