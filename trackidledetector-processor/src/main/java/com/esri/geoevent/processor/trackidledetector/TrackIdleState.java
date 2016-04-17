@@ -28,7 +28,7 @@ import java.util.Date;
 
 import com.esri.core.geometry.MapGeometry;
 
-public class TrackIdleItem
+public class TrackIdleState
 {
 	private String			trackId;
 	private Date				startTime;
@@ -37,7 +37,7 @@ public class TrackIdleItem
 	private boolean			isIdling;
 	private double			idleDuration;
 
-	public TrackIdleItem(String trackId, Date startTime, Date previousTime, MapGeometry geometry)
+	public TrackIdleState(String trackId, Date startTime, Date previousTime, MapGeometry geometry)
 	{
 		this.trackId      = trackId;
 		this.startTime    = startTime;
