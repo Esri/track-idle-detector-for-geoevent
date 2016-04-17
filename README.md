@@ -9,6 +9,10 @@ ArcGIS 10.4 GeoEvent Extension for Server sample Location Idle Track Detector Pr
 * Caches the last known location and time-stamp for a new or moved event.
 * Allows the user to define a distance tolerance and an idle time threshold.
 * Allows the user to define whether an idle report will be generated continuously or only on change.
+* Allows the user to specify whether to keep the fields from the original GeoEvent, or whether to create a GeoEvent with only idle state properies.
+* Allows the user to define the output GeoEvent Definition.
+* Allows the user to specify whether to accumulate the idle duration value, or to report idle duration since the last idle report for the Track.
+* Allows the user to specify whether to report the idle duration value when not idle, or to report zero idle duration.
 
 ## Instructions
 
