@@ -41,6 +41,7 @@ public class TrackIdleState
 	{
 		this.trackId      = trackId;
 		this.startTime    = startTime;
+		this.previousTime = startTime;
 		this.geometry     = geometry;
 		this.idleDuration = 0;
 		this.setIdling(false);
