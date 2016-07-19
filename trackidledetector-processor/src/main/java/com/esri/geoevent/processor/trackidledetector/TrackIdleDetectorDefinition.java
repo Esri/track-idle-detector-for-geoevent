@@ -68,7 +68,7 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 			fds.add(new DefaultFieldDefinition("trackId", FieldType.String, "TRACK_ID"));
 			fds.add(new DefaultFieldDefinition("idle", FieldType.Boolean));
 			fds.add(new DefaultFieldDefinition("idleDuration", FieldType.Double));
-			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date));
+			fds.add(new DefaultFieldDefinition("idleStart", FieldType.Date, "TIME_START"));
 			fds.add(new DefaultFieldDefinition("geometry", FieldType.Geometry, "GEOMETRY"));
 			ged.setFieldDefinitions(fds);
 			geoEventDefinitions.put(ged.getName(), ged);
