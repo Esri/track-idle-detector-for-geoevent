@@ -24,24 +24,13 @@
 
 package com.esri.geoevent.processor.trackidledetector;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.esri.core.geometry.Geometry.Type;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.MapGeometry;
 import com.esri.core.geometry.Point;
 import com.esri.ges.core.ConfigurationException;
 import com.esri.ges.core.component.ComponentException;
-import com.esri.ges.core.geoevent.DefaultFieldDefinition;
-import com.esri.ges.core.geoevent.FieldDefinition;
-import com.esri.ges.core.geoevent.FieldType;
-import com.esri.ges.core.geoevent.GeoEvent;
-import com.esri.ges.core.geoevent.GeoEventDefinition;
-import com.esri.ges.core.geoevent.GeoEventPropertyName;
+import com.esri.ges.core.geoevent.*;
 import com.esri.ges.core.validation.ValidationException;
 import com.esri.ges.framework.i18n.BundleLogger;
 import com.esri.ges.framework.i18n.BundleLoggerFactory;
@@ -54,6 +43,11 @@ import com.esri.ges.processor.GeoEventProcessorBase;
 import com.esri.ges.processor.GeoEventProcessorDefinition;
 import com.esri.ges.util.Converter;
 import com.esri.ges.util.Validator;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TrackIdleDetector extends GeoEventProcessorBase
 {
