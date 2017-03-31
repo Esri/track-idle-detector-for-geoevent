@@ -24,9 +24,8 @@
 
 package com.esri.geoevent.processor.trackidledetector;
 
-import java.util.Date;
-
 import com.esri.core.geometry.MapGeometry;
+import java.util.Date;
 
 public class TrackIdleState
 {
@@ -106,5 +105,4 @@ public class TrackIdleState
 	{
 		this.idleDuration = idleDuration;
 	}
-
 }

@@ -24,20 +24,15 @@
 
 package com.esri.geoevent.processor.trackidledetector;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.esri.ges.core.geoevent.DefaultFieldDefinition;
-import com.esri.ges.core.geoevent.DefaultGeoEventDefinition;
-import com.esri.ges.core.geoevent.FieldDefinition;
-import com.esri.ges.core.geoevent.FieldType;
-import com.esri.ges.core.geoevent.GeoEventDefinition;
+import com.esri.ges.core.geoevent.*;
 import com.esri.ges.core.property.LabeledValue;
 import com.esri.ges.core.property.PropertyDefinition;
 import com.esri.ges.core.property.PropertyType;
 import com.esri.ges.framework.i18n.BundleLogger;
 import com.esri.ges.framework.i18n.BundleLoggerFactory;
 import com.esri.ges.processor.GeoEventProcessorDefinitionBase;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 {
@@ -78,9 +73,6 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 			LOGGER.error("INIT_ERROR", error.getMessage());
 			LOGGER.info(error.getMessage(), error);
 		}
-
-
-	
 	}
 
 	@Override
@@ -98,7 +90,7 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 	@Override
 	public String getVersion()
 	{
-		return "10.4.0";
+		return "10.5.0";
 	}
 
 	@Override
