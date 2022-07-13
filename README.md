@@ -14,30 +14,37 @@ ArcGIS GeoEvent Server sample Track Idle Detector Processor.
 * Allows the user to specify whether to accumulate the idle duration value, or to report idle duration since the last idle value reported for the Track.
 * Allows the user to specify whether to report the idle duration value when not idle, or to report zero idle duration.
 
+## Requirements
+
+* ArcGIS GeoEvent Processor for Server version 10.6 or later.
+* ArcGIS GeoEvent Processor SDK version 10.6.
+* Java JDK 1.8 or greater.
+* Maven 3.6.3 or greater.
+
 ## Instructions
 
 Building the source code:
 
-1. Make sure Maven and ArcGIS GeoEvent Server SDK are installed on your machine.
-2. Run 'mvn install -Dcontact.address=[YourContactEmailAddress]'
+1. Make sure Maven and ArcGIS GeoEvent Processor SDK are installed on your machine.  <br>
+ _c:\temp>_ javac -version <br>
+ _c:\temp>_ mvn -version  <br>
+2. Clone the repository to your temp drive  <br>
+ _c:\temp>_ git clone <repository URL> CD into the directory  <br>
+3. Build with maven  <br>
+ _c:\temp>_ mvn clean install -Dcontact.address=[YourContactEmailAddress]'
 
 Installing the built jar files:
 
-1. Copy the *.jar files under the 'target' sub-folder(s) into the [ArcGIS-GeoEvent-Server-Install-Directory]/deploy folder.
+1. Use the .jar file built above or download a [zip of jar and documentation](https://www.arcgis.com/home/item.html?id=cf02f3b8564042db8de60f582e1ad2a3).
+2. Copy the jar files into the [ArcGIS-GeoEvent-Processor-Install-Directory]/deploy folder.
 
-## Requirements
-
-* ArcGIS GeoEvent Server.
-* ArcGIS GeoEvent Server SDK.
-* Java JDK 1.8 or greater.
-* Maven.
 
 ## Resources
 
-* [GeoEvent gallery item](http://www.arcgis.com/home/item.html?id=5d8e3446736d4df299c7c96bc275d561) on the ArcGIS GeoEvent Gallery
-* [ArcGIS GeoEvent Server Resources](http://links.esri.com/geoevent)
-* [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
-* [twitter@esri](http://twitter.com/esri)
+* [ArcGIS GeoEvent Server SDK](https://enterprise.arcgis.com/en/geoevent/latest/reference/getting-started-with-the-geoevent-server-sdk.htm)
+* [ArcGIS GeoEvent Server](https://enterprise.arcgis.com/en/geoevent/)
+* [Esri GeoEvent Community](https://enterprise.arcgis.com/en/geoevent/latest/reference/getting-started-with-the-geoevent-server-sdk.htm)
+
 
 ## Issues
 

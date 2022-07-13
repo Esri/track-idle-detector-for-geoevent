@@ -5,38 +5,38 @@
 
   <parent>
     <groupId>com.esri.geoevent.parent</groupId>
-    <artifactId>track-idle-detector</artifactId>
-    <version>10.6.0</version>
+    <artifactId>trackidledetector</artifactId>
+    <version>${revision}</version>
   </parent>
 
   <packaging>bundle</packaging>
   <groupId>com.esri.geoevent.processor</groupId>
   <artifactId>trackidledetector-processor</artifactId>
-  <name>Esri :: GeoEvent :: Processor :: Track Idle Detector</name>
+  <name>${artifactId}</name>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.esri.geoevent.sdk</groupId>
+      <artifactId>geoevent-sdk</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-ContactAddress>geoevent@esri.com</Bundle-ContactAddress>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package />
-            <Private-Package>com.esri.geoevent.processor.trackidledetector</Private-Package>
-          </instructions>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
