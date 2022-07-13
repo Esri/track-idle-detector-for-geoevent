@@ -24,85 +24,86 @@
 
 package com.esri.geoevent.processor.trackidledetector;
 
-import com.esri.core.geometry.MapGeometry;
 import java.util.Date;
+
+import com.esri.core.geometry.MapGeometry;
 
 public class TrackIdleState
 {
-	private String			trackId;
-	private Date				startTime;
-	private Date				previousTime;
-	private MapGeometry	geometry;
-	private boolean			isIdling;
-	private double			idleDuration;
+  private String      trackId;
+  private Date        startTime;
+  private Date        previousTime;
+  private MapGeometry geometry;
+  private boolean     isIdling;
+  private double      idleDuration;
 
-	public TrackIdleState(String trackId, Date startTime, Date previousTime, MapGeometry geometry)
-	{
-		this.trackId      = trackId;
-		this.startTime    = startTime;
-		this.previousTime = startTime;
-		this.geometry     = geometry;
-		this.idleDuration = 0;
-		this.setIdling(false);
-	}
+  public TrackIdleState(String trackId, Date startTime, Date previousTime, MapGeometry geometry)
+  {
+    this.trackId = trackId;
+    this.startTime = startTime;
+    this.previousTime = startTime;
+    this.geometry = geometry;
+    this.idleDuration = 0;
+    this.setIdling(false);
+  }
 
-	public String getTrackId()
-	{
-		return trackId;
-	}
+  public String getTrackId()
+  {
+    return trackId;
+  }
 
-	public void setTrackId(String trackId)
-	{
-		this.trackId = trackId;
-	}
+  public void setTrackId(String trackId)
+  {
+    this.trackId = trackId;
+  }
 
-	public Date getStartTime()
-	{
-		return startTime;
-	}
+  public Date getStartTime()
+  {
+    return startTime;
+  }
 
-	public void setStartTime(Date startTime)
-	{
-		this.startTime = startTime;
-	}
+  public void setStartTime(Date startTime)
+  {
+    this.startTime = startTime;
+  }
 
-	public Date getPreviousTime()
-	{
-		return previousTime;
-	}
+  public Date getPreviousTime()
+  {
+    return previousTime;
+  }
 
-	public void setPreviousTime(Date previousTime)
-	{
-		this.previousTime = previousTime;
-	}
+  public void setPreviousTime(Date previousTime)
+  {
+    this.previousTime = previousTime;
+  }
 
-	public MapGeometry getGeometry()
-	{
-		return geometry;
-	}
+  public MapGeometry getGeometry()
+  {
+    return geometry;
+  }
 
-	public void setGeometry(MapGeometry geometry)
-	{
-		this.geometry = geometry;
-	}
+  public void setGeometry(MapGeometry geometry)
+  {
+    this.geometry = geometry;
+  }
 
-	public boolean isIdling()
-	{
-		return isIdling;
-	}
+  public boolean isIdling()
+  {
+    return isIdling;
+  }
 
-	public void setIdling(boolean isIdling)
-	{
-		this.isIdling = isIdling;
-	}
+  public void setIdling(boolean isIdling)
+  {
+    this.isIdling = isIdling;
+  }
 
-	public double getIdleDuration()
-	{
-		return idleDuration;
-	}
+  public double getIdleDuration()
+  {
+    return idleDuration;
+  }
 
-	public void setIdleDuration(double idleDuration)
-	{
-		this.idleDuration = idleDuration;
-	}
+  public void setIdleDuration(double idleDuration)
+  {
+    this.idleDuration = idleDuration;
+  }
 }
