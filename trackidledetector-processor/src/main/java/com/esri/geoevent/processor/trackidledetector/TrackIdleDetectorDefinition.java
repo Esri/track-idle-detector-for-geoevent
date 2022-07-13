@@ -78,7 +78,7 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
       if (LOGGER.isInfoEnabled())
         LOGGER.info("INIT_ERROR", error, "");
       else
-      LOGGER.error("INIT_ERROR", error.getMessage());
+        LOGGER.error("INIT_ERROR", error.getMessage());
 
     }
   }
