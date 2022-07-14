@@ -104,5 +104,11 @@ public class TrackIdleState
   public void setIdleDuration(double idleDuration)
   {
     this.idleDuration = idleDuration;
+	}
+
+  @Override
+  public String toString()
+  {
+    return "TrackIdleState [trackId=" + trackId + ", startTime=" + startTime + ", previousTime=" + previousTime + ", geometry=" + geometry + ", isIdling=" + isIdling + ", idleDuration=" + idleDuration + "]";
   }
 }

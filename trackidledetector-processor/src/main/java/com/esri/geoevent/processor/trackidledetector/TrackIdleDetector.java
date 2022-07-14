@@ -107,7 +107,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     }
     catch (ConfigurationException error)
     {
-      LOGGER.error(error.getMessage(), error);
+      if (LOGGER.isDebugEnabled())
+        LOGGER.debug("FAILED_ADD_FIELD_GED", error);
+      else
+        LOGGER.warn("FAILED_ADD_FIELD_GED", error.getMessage());
     }
   }
 
@@ -123,7 +126,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     super.validate();
     List<String> errors = new ArrayList<String>();
     if (idleLimit <= 0)
-      errors.add(LOGGER.translate("VALIDATION_GAP_DURATION_INVALID", definition.getName()));
+      errors.add(LOGGER.translate("VALIDATION_IDLE_LIMIT_INVALID", definition.getName()));
 
     if (errors.size() > 0)
     {
@@ -138,7 +141,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
   {
     if (geoEvent.getTrackId() == null || geoEvent.getGeometry() == null)
     {
-      LOGGER.warn("NULL_ERROR");
+      if (LOGGER.isDebugEnabled())
+        LOGGER.debug("NULL_ERROR", geoEvent);
+      else
+        LOGGER.warn("NULL_ERROR", "");
       return null;
     }
     if (trackIdleStates == null)
@@ -146,21 +152,26 @@ public class TrackIdleDetector extends GeoEventProcessorBase
       LOGGER.warn("TRACK_IDLES_NULL");
       return null;
     }
+    LOGGER.trace("PROCESSING_EVENT", geoEvent);
 
     GeoEvent idleGeoEvent = null;
     try
     {
       String cacheKey = buildCacheKey(geoEvent);
+      LOGGER.trace("PROCESSING_EVENT_CACHE_KEY", cacheKey);
       TrackIdleState idleSate = trackIdleStates.get(cacheKey);
+      LOGGER.trace("FOUND_EVENT_IDLE_STATE", idleSate);
       Date geoEventTime = geoEvent.getStartTime();
+      LOGGER.trace("CURRENT_EVENT_TIME", geoEventTime);
 
       if (idleSate != null && idleSate.getGeometry() != null)
       {
         // make sure to create/retrieve the correct GED
         GeoEventDefinition ged = createTrackIdleGED(geoEvent);
 
-        if (!hasGeometryMoved(geoEvent.getGeometry(), idleSate.getGeometry(), tolerance))
+        if (!hasGeometryMoved(cacheKey, geoEvent.getGeometry(), idleSate.getGeometry(), tolerance))
         {
+          LOGGER.trace("TRACK_NOT_MOVED_ENOUGH", cacheKey, tolerance, geoEvent);
           // didn't move more than tolerance (in feet)
 
           double idleDuration = 0;
@@ -179,6 +190,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
           if (idleDuration >= idleLimit)
           {
             // track is idle more than idleLimit
+            LOGGER.trace("IDLE_DURATION_EXCEEDS_LIMIT", idleDuration, idleLimit, geoEvent);
 
             // set track idle duration
             idleSate.setIdleDuration(idleDuration);
@@ -215,7 +227,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     }
     catch (Exception error)
     {
-      LOGGER.error(error.getMessage(), error);
+      if (LOGGER.isTraceEnabled())
+        LOGGER.debug("PROCESS_EVENT_FAILURE", error, geoEvent);
+      else
+        LOGGER.warn("PROCESS_EVENT_FAILURE", error.getMessage());
     }
 
     return idleGeoEvent;
@@ -240,7 +255,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
         }
         catch (ConfigurationException e)
         {
-          LOGGER.error(e.getLocalizedMessage());
+          if (LOGGER.isDebugEnabled())
+            LOGGER.debug("ADD_TRACK_IDLE_FIELDS_FAILURE", e, gedName);
+          else
+            LOGGER.warn("ADD_TRACK_IDLE_FIELDS_FAILURE", gedName);
         }
 
         // make sure to also augment the "GEOMETRY" and "TRACK_ID" fields
@@ -266,7 +284,10 @@ public class TrackIdleDetector extends GeoEventProcessorBase
         }
         catch (GeoEventDefinitionManagerException e)
         {
-          LOGGER.error(e.getLocalizedMessage());
+          if (LOGGER.isDebugEnabled())
+            LOGGER.debug("ADD_DEFINITION_FAILURE", e, gedName);
+          else
+            LOGGER.warn("ADD_DEFINITION_FAILURE", gedName);
         }
       }
     }
@@ -278,7 +299,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     return ged;
   }
 
-  private boolean hasGeometryMoved(MapGeometry geom1, MapGeometry geom2, double tolerance)
+  private boolean hasGeometryMoved(String cacheKey, MapGeometry geom1, MapGeometry geom2, double tolerance)
   {
     if (geom1 != null && geom1.getGeometry() != null && geom1.getGeometry().getType() == Type.Point && geom2 != null && geom2.getGeometry() != null && geom2.getGeometry().getType() == Type.Point)
     {
@@ -288,10 +309,14 @@ public class TrackIdleDetector extends GeoEventProcessorBase
       try
       {
         meters = GeometryEngine.geodesicDistanceOnWGS84(corePt1, corePt2);
+        LOGGER.trace("TRACK_MOVED_X_METERS", cacheKey, meters);
       }
       catch (Throwable error)
       {
-        LOGGER.error(error.getMessage());
+        if (LOGGER.isDebugEnabled())
+          LOGGER.debug("DISTANCE_FAILURE", error, cacheKey);
+        else
+          LOGGER.warn("DISTANCE_FAILURE", cacheKey);
       }
 
       double feet = meter2feet(meters);
@@ -337,13 +362,46 @@ public class TrackIdleDetector extends GeoEventProcessorBase
       }
       else
       {
-        // idleEvent.setField("trackId", idleState.getTrackId());
-        // idleEvent.setField("GEOMETRY", idleState.getGeometry());
+        if (LOGGER.isTraceEnabled())
+        {
+          LOGGER.trace("SETTING_IDLE_NOTIFICATION_FIELD", "TRACK_ID", idleState.getTrackId());
+          LOGGER.trace("SETTING_IDLE_NOTIFICATION_FIELD", "GEOMETRY", idleState.getGeometry());
+        }
+        idleGeoEvent.setField("TRACK_ID", idleState.getTrackId());
+        idleGeoEvent.setField("GEOMETRY", idleState.getGeometry());
+
+        // Update from the new event if possible
         for (FieldDefinition fd : geoEvent.getGeoEventDefinition().getFieldDefinitions())
         {
-          if (fd.getTags().contains("TRACK_ID") || fd.getTags().contains("GEOMETRY"))
+          if (fd.getTags().contains("TRACK_ID"))
           {
+            if (idleGeoEvent.getField(fd.getName()) != null)
+            {
+              if (LOGGER.isTraceEnabled())
+                LOGGER.trace("UPDATING_EXISTING_FIELD_VALUE", fd.getName(), geoEvent.getField(fd.getName()));
+              idleGeoEvent.setField(fd.getName(), geoEvent.getField(fd.getName()));
+            }
+            else
+            {
+              if (LOGGER.isTraceEnabled())
+                LOGGER.trace("UPDATING_TRACK_ID_TAG_INSTEAD", fd.getName(), geoEvent.getField(fd.getName()));
+              idleGeoEvent.setField("TRACK_ID", geoEvent.getField(fd.getName()));
+            }
+          }
+          else if (fd.getTags().contains("GEOMETRY"))
+          {
+            if (idleGeoEvent.getField(fd.getName()) != null)
+            {
+              if (LOGGER.isTraceEnabled())
+                LOGGER.trace("UPDATING_GEOMETRY_FIELD", fd.getName(), geoEvent.getField(fd.getName()));
             idleGeoEvent.setField(fd.getName(), geoEvent.getField(fd.getName()));
+          }
+            else
+            {
+              if (LOGGER.isTraceEnabled())
+                LOGGER.trace("UPDATING_GEOMETRY_TAG_INSTEAD", fd.getName(), geoEvent.getField(fd.getName()));
+              idleGeoEvent.setField("GEOMETRY", geoEvent.getField(fd.getName()));
+            }
           }
         }
       }
@@ -358,9 +416,14 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     catch (Exception error)
     {
       idleGeoEvent = null;
-      LOGGER.error("GEOEVENT_CREATION_ERROR", error.getMessage());
-      LOGGER.info(error.getMessage(), error);
+      if (LOGGER.isDebugEnabled())
+        LOGGER.debug("GEOEVENT_CREATION_ERROR", error, geoEvent);
+      else
+        LOGGER.warn("GEOEVENT_CREATION_ERROR", geoEvent);
     }
+
+    if (idleGeoEvent != null)
+      LOGGER.trace("RELEASING_IDLE_EVENT", idleGeoEvent);
 
     return idleGeoEvent;
   }

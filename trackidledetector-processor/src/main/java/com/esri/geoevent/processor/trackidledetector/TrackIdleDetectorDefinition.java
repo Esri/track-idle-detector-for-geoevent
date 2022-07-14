@@ -41,7 +41,7 @@ import com.esri.ges.processor.GeoEventProcessorDefinitionBase;
 
 public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
 {
-  private static final BundleLogger LOGGER                      = BundleLoggerFactory.getLogger(TrackIdleDetectorDefinition.class);
+  private static final BundleLogger LOGGER                      = BundleLoggerFactory.getLogger(TrackIdleDetector.class);
 
   public static final String        DEFAULT_TRACK_IDLE_GED_NAME = "TrackIdle";
 
@@ -87,18 +87,6 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
   public String getName()
   {
     return "TrackIdleDetector";
-  }
-
-  @Override
-  public String getDomain()
-  {
-    return "com.esri.geoevent.processor";
-  }
-
-  @Override
-  public String getVersion()
-  {
-    return "10.6.0";
   }
 
   @Override
