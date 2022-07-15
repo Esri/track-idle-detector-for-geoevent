@@ -25,6 +25,7 @@
 package com.esri.geoevent.processor.trackidledetector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
   protected TrackIdleDetector(GeoEventProcessorDefinition definition) throws ComponentException
   {
     super(definition);
+    LOGGER.trace("PROCESSOR_DESC");
   }
 
   public void afterPropertiesSet()
@@ -108,7 +110,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     catch (ConfigurationException error)
     {
       if (LOGGER.isDebugEnabled())
-        LOGGER.debug("FAILED_ADD_FIELD_GED", error);
+        LOGGER.warn("FAILED_ADD_FIELD_GED", error);
       else
         LOGGER.warn("FAILED_ADD_FIELD_GED", error.getMessage());
     }
@@ -139,12 +141,13 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 
   private GeoEvent processGeoEvent(GeoEvent geoEvent) throws GeoEventDefinitionManagerException
   {
-    if (geoEvent.getTrackId() == null || geoEvent.getGeometry() == null)
+    if (geoEvent.getTrackId() == null || geoEvent.getGeometry() == null || geoEvent.getField("TIME_START") == null)
     {
+      String gedName = geoEvent.getGeoEventDefinition().getName();
       if (LOGGER.isDebugEnabled())
-        LOGGER.debug("NULL_ERROR", geoEvent);
+        LOGGER.warn("NULL_ERROR", new RuntimeException("Required field missing"), gedName, geoEvent);
       else
-        LOGGER.warn("NULL_ERROR", "");
+        LOGGER.warn("NULL_ERROR", gedName, "");
       return null;
     }
     if (trackIdleStates == null)
@@ -166,8 +169,6 @@ public class TrackIdleDetector extends GeoEventProcessorBase
 
       if (idleSate != null && idleSate.getGeometry() != null)
       {
-        // make sure to create/retrieve the correct GED
-        GeoEventDefinition ged = createTrackIdleGED(geoEvent);
 
         if (!hasGeometryMoved(cacheKey, geoEvent.getGeometry(), idleSate.getGeometry(), tolerance))
         {
@@ -196,10 +197,16 @@ public class TrackIdleDetector extends GeoEventProcessorBase
             idleSate.setIdleDuration(idleDuration);
 
             if (notificationMode == TrackIdleNotificationMode.Continuous)
-              idleGeoEvent = createTrackIdleGeoEvent(ged, idleSate, true, true, geoEvent);
-            else if (!idleSate.isIdling())
-              idleGeoEvent = createTrackIdleGeoEvent(ged, idleSate, true, true, geoEvent);
+            {
+              GeoEventDefinition ged = createTrackIdleGED(geoEvent);
 
+              idleGeoEvent = createTrackIdleGeoEvent(ged, idleSate, true, true, geoEvent);
+            }
+            else if (!idleSate.isIdling())
+            {
+              GeoEventDefinition ged = createTrackIdleGED(geoEvent);
+              idleGeoEvent = createTrackIdleGeoEvent(ged, idleSate, true, true, geoEvent);
+            }
             // set track to idle
             idleSate.setIdling(true);
           }
@@ -210,6 +217,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
           if (idleSate.isIdling())
           {
             // track is no longer idle
+            GeoEventDefinition ged = createTrackIdleGED(geoEvent);
             idleGeoEvent = createTrackIdleGeoEvent(ged, idleSate, false, reportIdleDurationWhileNotIdle, geoEvent);
           }
 
@@ -228,7 +236,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     catch (Exception error)
     {
       if (LOGGER.isTraceEnabled())
-        LOGGER.debug("PROCESS_EVENT_FAILURE", error, geoEvent);
+        LOGGER.warn("PROCESS_EVENT_FAILURE", error, geoEvent);
       else
         LOGGER.warn("PROCESS_EVENT_FAILURE", error.getMessage());
     }
@@ -248,6 +256,24 @@ public class TrackIdleDetector extends GeoEventProcessorBase
         // create the GED
         GeoEventDefinition eventGED = event.getGeoEventDefinition();
 
+        List<String> duplicateFieldList = new ArrayList<String>();
+        for (FieldDefinition eventField : eventGED.getFieldDefinitions())
+        {
+          String eventFieldName = eventField.getName();
+          for (FieldDefinition trackIdleField : trackIdleFields)
+          {
+            String trackIdleFieldName = trackIdleField.getName();
+            if (trackIdleFieldName.equalsIgnoreCase(eventFieldName))
+            {
+              duplicateFieldList.add(trackIdleFieldName);
+            }
+          }
+        }
+        if (duplicateFieldList.size() > 0)
+        {
+          throw new RuntimeException(LOGGER.translate("DUPLICATE_FIELD", gedName, eventGED.getName(), Arrays.toString(duplicateFieldList.toArray())));
+        }
+
         // augment Track Idle basic fields
         try
         {
@@ -256,7 +282,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
         catch (ConfigurationException e)
         {
           if (LOGGER.isDebugEnabled())
-            LOGGER.debug("ADD_TRACK_IDLE_FIELDS_FAILURE", e, gedName);
+            LOGGER.warn("ADD_TRACK_IDLE_FIELDS_FAILURE", e, gedName);
           else
             LOGGER.warn("ADD_TRACK_IDLE_FIELDS_FAILURE", gedName);
         }
@@ -285,9 +311,9 @@ public class TrackIdleDetector extends GeoEventProcessorBase
         catch (GeoEventDefinitionManagerException e)
         {
           if (LOGGER.isDebugEnabled())
-            LOGGER.debug("ADD_DEFINITION_FAILURE", e, gedName);
+            LOGGER.warn("ADD_DEFINITION_FAILURE", e, gedName, "");
           else
-            LOGGER.warn("ADD_DEFINITION_FAILURE", gedName);
+            LOGGER.warn("ADD_DEFINITION_FAILURE", gedName, e.getMessage());
         }
       }
     }
@@ -314,7 +340,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
       catch (Throwable error)
       {
         if (LOGGER.isDebugEnabled())
-          LOGGER.debug("DISTANCE_FAILURE", error, cacheKey);
+          LOGGER.warn("DISTANCE_FAILURE", error, cacheKey);
         else
           LOGGER.warn("DISTANCE_FAILURE", cacheKey);
       }
@@ -417,7 +443,7 @@ public class TrackIdleDetector extends GeoEventProcessorBase
     {
       idleGeoEvent = null;
       if (LOGGER.isDebugEnabled())
-        LOGGER.debug("GEOEVENT_CREATION_ERROR", error, geoEvent);
+        LOGGER.warn("GEOEVENT_CREATION_ERROR", error, geoEvent);
       else
         LOGGER.warn("GEOEVENT_CREATION_ERROR", geoEvent);
     }

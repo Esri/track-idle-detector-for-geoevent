@@ -86,7 +86,13 @@ public class TrackIdleDetectorDefinition extends GeoEventProcessorDefinitionBase
   @Override
   public String getName()
   {
-    return "TrackIdleDetector";
+    return "trackidledetector-processor";
+  }
+
+  @Override
+  public String getDomain()
+  {
+    return "com.esri.geoevent.processor";
   }
 
   @Override
