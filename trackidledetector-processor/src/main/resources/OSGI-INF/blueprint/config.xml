@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-	<reference id="messagingService" interface="com.esri.ges.messaging.Messaging" timeout="1000"/>
-	<reference id="gedManagerService" interface="com.esri.ges.manager.geoeventdefinition.GeoEventDefinitionManager" timeout="1000"/>
+  <reference id="messagingService"
+    interface="com.esri.ges.messaging.Messaging" timeout="1000" />
+  <reference id="gedManagerService"
+    interface="com.esri.ges.manager.geoeventdefinition.GeoEventDefinitionManager"
+    timeout="1000" />
 
-		<bean id="trackIdleDetectorServiceBean" class="com.esri.geoevent.processor.trackidledetector.TrackIdleDetectorService" activation="eager">
-			<property name="bundleContext" ref="blueprintBundleContext"/>
-			<property name="messaging" ref="messagingService"/>
-			<property name="gedManager" ref="gedManagerService"/>
-		</bean>
+  <bean id="trackIdleDetectorServiceBean"
+    class="com.esri.geoevent.processor.trackidledetector.TrackIdleDetectorService"
+    activation="eager">
+    <property name="bundleContext" ref="blueprintBundleContext" />
+    <property name="messaging" ref="messagingService" />
+    <property name="gedManager" ref="gedManagerService" />
+  </bean>
 
-	<service id="TrackIdleDetectorService" ref="trackIdleDetectorServiceBean" interface="com.esri.ges.processor.GeoEventProcessorService"/>
+  <service id="TrackIdleDetectorService"
+    ref="trackIdleDetectorServiceBean"
+    interface="com.esri.ges.processor.GeoEventProcessorService" />
 </blueprint>

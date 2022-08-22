@@ -32,30 +32,30 @@ import com.esri.ges.processor.GeoEventProcessorServiceBase;
 
 public class TrackIdleDetectorService extends GeoEventProcessorServiceBase
 {
-	private Messaging									messaging;
-	private GeoEventDefinitionManager	gedManager;
+  private Messaging                 messaging;
+  private GeoEventDefinitionManager gedManager;
 
-	public TrackIdleDetectorService()
-	{
-		definition = new TrackIdleDetectorDefinition();
-	}
+  public TrackIdleDetectorService()
+  {
+    definition = new TrackIdleDetectorDefinition();
+  }
 
-	@Override
-	public GeoEventProcessor create() throws ComponentException
-	{
-		TrackIdleDetector detector = new TrackIdleDetector(definition);
-		detector.setMessaging(messaging);
-		detector.setManager(gedManager);
-		return detector;
-	}
+  @Override
+  public GeoEventProcessor create() throws ComponentException
+  {
+    TrackIdleDetector detector = new TrackIdleDetector(definition);
+    detector.setMessaging(messaging);
+    detector.setManager(gedManager);
+    return detector;
+  }
 
-	public void setMessaging(Messaging messaging)
-	{
-		this.messaging = messaging;
-	}
+  public void setMessaging(Messaging messaging)
+  {
+    this.messaging = messaging;
+  }
 
-	public void setGedManager(GeoEventDefinitionManager gedManager)
-	{
-		this.gedManager = gedManager;
-	}
+  public void setGedManager(GeoEventDefinitionManager gedManager)
+  {
+    this.gedManager = gedManager;
+  }
 }
