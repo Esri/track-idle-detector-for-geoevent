@@ -9,7 +9,7 @@
   <version>${revision}</version>
   <packaging>pom</packaging>
 
-  <name>${project.artifactId}-parent</name>
+  <name>Esri :: GeoEvent :: TrackIdleDector</name>
   <url>http://www.esri.com</url>
   <organization>
     <name>Esri, inc</name>
@@ -72,7 +72,7 @@
           <extensions>true</extensions>
           <version>${maven.bundle.plugin.version}</version>
           <configuration>
-            <finalName>${project.name}-${revision}</finalName>
+            <finalName>${project.artifactId}-${revision}</finalName>
             <instructions>
               <AGES-Domain>${project.groupId}</AGES-Domain>
               <Bundle-ContactAddress>${contact.address}</Bundle-ContactAddress>

@@ -12,7 +12,7 @@
   <packaging>bundle</packaging>
   <groupId>com.esri.geoevent.processor</groupId>
   <artifactId>trackidledetector-processor</artifactId>
-  <name>${artifactId}</name>
+  <name>Esri :: GeoEvent :: TrackIdleDector Processor</name>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
